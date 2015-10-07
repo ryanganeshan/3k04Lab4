@@ -1,13 +1,3 @@
-5.3.4
-Obstacle Avoidance
-// read from the proxies
-robot.Read();
-//wander
-Wander(&forwardSpeed, &turnSpeed);
-//set motors
-p2dProxy.SetSpeed(forwardSpeed, dtor(turnSpeed));
-sleep(1);
-Now we need to write a subfunction that checks the sonars for any obstacles and amends the motor speeds accordingly.
 void AvoidObstacles(double *forwardSpeed, double *turnSpeed, \
       SonarProxy &sp)
 {
