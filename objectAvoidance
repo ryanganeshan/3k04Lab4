@@ -1,0 +1,57 @@
+5.3.4
+Obstacle Avoidance
+// read from the proxies
+robot.Read();
+//wander
+Wander(&forwardSpeed, &turnSpeed);
+//set motors
+p2dProxy.SetSpeed(forwardSpeed, dtor(turnSpeed));
+sleep(1);
+Now we need to write a subfunction that checks the sonars for any obstacles and amends the motor speeds accordingly.
+void AvoidObstacles(double *forwardSpeed, double *turnSpeed, \
+      SonarProxy &sp)
+{
+//will avoid obstacles closer than 40cm
+double avoidDistance = 0.4;
+//will turn away at 60 degrees/sec
+int avoidTurnSpeed = 60;
+//left corner is sonar no. 2
+//right corner is sonar no. 3
+if(sp[2] < avoidDistance)
+{
+      *forwardSpeed = 0;
+      //turn right
+      *turnSpeed = (-1)*avoidTurnSpeed;
+      return;
+}
+else if(sp[3] < avoidDistance)
+51
+}
+{
+{
+   (sp[1] < avoidDistance))
+//back off a little bit
+*forwardSpeed = -0.2;
+*turnSpeed = avoidTurnSpeed;
+return;
+*forwardSpeed = 0;
+//turn left
+*turnSpeed = avoidTurnSpeed;
+return;
+}
+else if( (sp[0] < avoidDistance) && \
+}
+return; //do nothing
+This is a very basic obstacle avoidance subfunction will update the motor speeds only if there is an obstacle to avoid. If we call this function just before sending data to the motors then it will overwrite any other behaviours so that the obstacle will be avoided. Once the obstacle is no longer in the way then the robot will continue as it was, this will allow us to transition from any behaviour into obstacle avoidance and then back again, as per the requirement of our control structure. All we need to do now is call this function in our control loop:
+while(true)
+{
+    // read from the proxies
+    robot.Read();
+    //wander
+    Wander(&forwardSpeed, &turnSpeed);
+    //avoid obstacles
+    AvoidObstacles(&forwardSpeed, &turnSpeed, sonarProxy);
+    //set motors
+    p2dProxy.SetSpeed(forwardSpeed, dtor(turnSpeed));
+    sleep(1);
+}
